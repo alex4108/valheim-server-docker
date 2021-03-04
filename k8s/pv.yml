@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: valheim-data
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 192.168.123.17
+    path: "/mnt/ISOs/valheim-data"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: valheim-config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 192.168.123.17
+    path: "/mnt/ISOs/valheim-config"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: valheim-data
+spec:
+  accessModes:
+    - ReadWriteMany
+  volumeName: valheim-data
+  resources:
+    requests:
+      storage: 9Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: valheim-config
+spec:
+  accessModes:
+    - ReadWriteMany
+  volumeName: valheim-config
+  resources:
+    requests:
+      storage: 1Gi

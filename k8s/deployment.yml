@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: valheim
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: valheim
+  template:
+    metadata:
+      labels:
+        name: valheim
+    spec:
+      volumes:
+      - name: valheim-data
+        persistentVolumeClaim:
+          claimName: valheim-data
+      - name: valheim-config
+        persistentVolumeClaim:
+          claimName: valheim-config
+      restartPolicy: Always
+      containers:
+      - name: valheim
+        image: lloesche/valheim-server:latest
+        env:
+        - name: SERVER_NAME
+          value: Gay Pride Club
+        - name: UPDATE_CRON
+          value: ""
+        - name: TZ
+          value: "America/Chicago"
+        - name: RESTART_CRON
+          value: "0 6 * * *"
+        - name: BACKUPS_CRON
+          value: ""
+        - name: BACKUPS_MAX_AGE
+          value: "14"
+        - name: SERVER_PASS
+          valueFrom:
+            secretKeyRef:
+              name: valheim
+              key: password
+        - name: SERVER_PUBLIC
+          value: "1"
+        ports:
+          - name: valheim-1
+            containerPort: 2456
+            protocol: UDP
+          - name: valheim-2
+            containerPort: 2457
+            protocol: UDP
+          - name: valheim-3
+            containerPort: 2458
+            protocol: UDP
+        volumeMounts:
+        - mountPath: "/config"
+          name: valheim-config
+        - mountPath: "/opt/valheim"
+          name: valheim-data
+        
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: valheim-svc
+spec:
+  selector:
+    name: valheim
+  ports:
+  - protocol: UDP
+    name: valheim-1
+    port: 2456
+    targetPort: 2456
+  - protocol: UDP
+    name: valheim-2
+    port: 2457
+    targetPort: 2457
+  - protocol: UDP
+    name: valheim-3
+    port: 2458
+    targetPort: 2458
+  type: LoadBalancer
