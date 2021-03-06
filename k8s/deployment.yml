@@ -34,6 +34,8 @@ spec:
           value: "0 6 * * *"
         - name: BACKUPS_CRON
           value: ""
+        - name: WORLD_NAME
+          value: endor
         - name: BACKUPS_MAX_AGE
           value: "14"
         - name: SERVER_PASS
@@ -58,26 +60,3 @@ spec:
           name: valheim-config
         - mountPath: "/opt/valheim"
           name: valheim-data
-        
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: valheim-svc
-spec:
-  selector:
-    name: valheim
-  ports:
-  - protocol: UDP
-    name: valheim-1
-    port: 2456
-    targetPort: 2456
-  - protocol: UDP
-    name: valheim-2
-    port: 2457
-    targetPort: 2457
-  - protocol: UDP
-    name: valheim-3
-    port: 2458
-    targetPort: 2458
-  type: LoadBalancer
